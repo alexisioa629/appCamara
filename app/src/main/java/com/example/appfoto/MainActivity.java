@@ -1,7 +1,10 @@
 package com.example.appfoto;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,6 +20,7 @@ import android.content.Intent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
+import static android.Manifest.permission.CAMERA;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
@@ -24,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private ImageView imagView;
     Intent i;
     Bitmap bitmap;
+    boolean validacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,14 +44,35 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                         .setAction("Action", null).show();
             }
         });
+        validarPermisos();
         inicializa();
     }
+    //metodo para validar paermisos
+    public boolean validarPermisos(){
+        //verificar la version
+
+        if(Build.VERSION.SDK_INT< Build.VERSION_CODES.M){
+            validacion= true;
+            return validacion;
+        }
+        if((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED)) {
+            validacion= true;
+            return validacion;
+        }else{
+            AlertDialog.Builder dialogo= new AlertDialog.Builder(MainActivity.this);
+            dialogo.setTitle("dar permisos a la aplicacion");
+            validacion= false;
+            return validacion;
+        }
+    }
+
 
     public void inicializa() {
-        btn = (Button) findViewById(R.id.btnCaptura);
-        btn.setOnClickListener(this);// objeto de implements de clicklistener
-        imagView = (ImageView) findViewById(R.id.imagen);
-
+        if(validacion==true) {
+            btn = (Button) findViewById(R.id.btnCaptura);
+            btn.setOnClickListener(this);// objeto de implements de clicklistener
+            imagView = (ImageView) findViewById(R.id.imagen);
+        }
 
     }
 
